@@ -1,0 +1,1 @@
+GET     /advert/:id   com.github.xelamanster.controllers.CarAdvertController.get(id: java.util.UUID)
