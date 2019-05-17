@@ -1,26 +1,26 @@
 package com.github.xelamanster.controllers
 
-import java.util.UUID
-
 import com.github.xelamanster.dao.dynamodb.DynamoDbCarAdvertDao
-import com.github.xelamanster.model.{AdvertNotFound, CarAdvert}
+import com.github.xelamanster.model.{AdvertNotFound, CarAdvert, Fuel}
 import org.scalatestplus.play._
 import play.api.test.Helpers._
 import play.api.test._
 import org.scalatest.mock.MockitoSugar
-
+import java.time.LocalDateTime
+import java.util.UUID
 import scala.concurrent.Future
 import org.mockito.Mockito._
+
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
+import com.github.xelamanster.utils.JsonUtils._
+
 class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
-  private val JsonType = "application/json"
-  private val TextType = "text/plain"
 
   private val newId = UUID.fromString("11b1f9cd-f6f4-4548-88f9-0cc5ee50227f")
   private val usedId = UUID.fromString("11b1f9cd-f6f4-4548-88f9-0cc5ee50327f")
   private val title = "title"
-  private val fuel = "fuel"
+  private val fuel = Fuel.Diesel
   private val price = 2
   private val isNew = true
 
@@ -29,14 +29,14 @@ class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
   private val usedMileage = Some(usedMileageValue)
 
   private val newFirstRegistration = None
-  private val usedFirstRegistrationValue = "date"
-  private val usedFirstRegistration = Some(usedFirstRegistrationValue)
+  private val usedFirstRegistrationValue = "18/05/2019 12:43:50"
+  private val usedFirstRegistration = Some(LocalDateTime.from(defaultDateFormat.parse(usedFirstRegistrationValue)))
 
   "CarAdvertControllerSpec get()" should {
 
     "respond with correct new car advert" in {
       val result = CarAdvert(newId, title, fuel, price, isNew, newMileage, newFirstRegistration)
-      val expected = s"""{"id":"$newId","title":"$title","fuel":"$fuel","price":$price,"new":$isNew}"""
+      val expected = s"""{"id":"$newId","title":"$title","fuel":"${fuel.entryName}","price":$price,"new":$isNew}"""
 
       val dao = mock[DynamoDbCarAdvertDao]
       when(dao.get(newId)).thenReturn(Future.successful(Right(result)))
@@ -51,7 +51,7 @@ class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
 
     "respond with correct used car advert" in {
       val result = CarAdvert(usedId, title, fuel, price, !isNew, usedMileage, usedFirstRegistration)
-      val expected = s"""{"id":"$usedId","title":"$title","fuel":"$fuel","price":$price,"new":${!isNew},"mileage":$usedMileageValue,"first registration":"$usedFirstRegistrationValue"}"""
+      val expected = s"""{"id":"$usedId","title":"$title","fuel":"${fuel.entryName}","price":$price,"new":${!isNew},"mileage":$usedMileageValue,"first registration":"$usedFirstRegistrationValue"}"""
 
       val dao = mock[DynamoDbCarAdvertDao]
       when(dao.get(usedId)).thenReturn(Future.successful(Right(result)))

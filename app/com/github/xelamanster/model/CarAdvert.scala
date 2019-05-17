@@ -1,10 +1,11 @@
 package com.github.xelamanster.model
 
+import com.github.xelamanster.utils.JsonUtils.implicits._
+
+import java.time.LocalDateTime
 import java.util.UUID
 
 import io.circe.{Decoder, Encoder}
-
-import CarAdvert.fields._
 
 object CarAdvert {
   object fields {
@@ -19,20 +20,19 @@ object CarAdvert {
 
   object implicits {
     implicit val carAdvertDecoder: Decoder[CarAdvert] =
-      Decoder.forProduct7(Id, Title, Fuel, Price, New, Mileage, FirstRegistration)(CarAdvert.apply)
+      Decoder.forProduct7(fields.Id, fields.Title, fields.Fuel, fields.Price, fields.New, fields.Mileage, fields.FirstRegistration)(CarAdvert.apply)
 
     implicit val carAdvertEncoder: Encoder[CarAdvert] =
-      Encoder.forProduct7(Id, Title, Fuel, Price, New, Mileage, FirstRegistration)(a =>
-        (a.id, a.title, a.fuel, a.price, a.isNew, a.mileage, a.firstRegistration)
-      )
+      Encoder.forProduct7(fields.Id, fields.Title, fields.Fuel, fields.Price, fields.New, fields.Mileage, fields.FirstRegistration)(a =>
+        (a.id, a.title, a.fuel, a.price, a.isNew, a.mileage, a.firstRegistration))
   }
 }
 
 case class CarAdvert(
     id: UUID,
     title: String,
-    fuel: String,
+    fuel: Fuel,
     price: Int,
     isNew: Boolean,
     mileage: Option[Int],
-    firstRegistration: Option[String])
+    firstRegistration: Option[LocalDateTime])

@@ -5,12 +5,14 @@ import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType._
 import org.scanamo.{DynamoFormat, Table}
 import org.scanamo.semiauto._
+import java.time.LocalDateTime
 import CarAdvertTable.implicits._
 
 object CarAdvertTable {
 
   object implicits {
-    implicit val formatFarm: DynamoFormat[CarAdvert] = deriveDynamoFormat[CarAdvert]
+    implicit val timeFormat: DynamoFormat[LocalDateTime] = ???
+    implicit val advertFormat: DynamoFormat[CarAdvert] = deriveDynamoFormat[CarAdvert]
   }
 
   object fields {
