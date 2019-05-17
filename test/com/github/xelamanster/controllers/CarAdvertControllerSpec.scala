@@ -32,36 +32,42 @@ class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
   private val usedFirstRegistrationValue = "18/05/2019 12:43:50"
   private val usedFirstRegistration = Some(LocalDateTime.from(defaultDateFormat.parse(usedFirstRegistrationValue)))
 
+  private val newCarAdvert =
+    CarAdvert(newId, title, fuel, price, isNew, newMileage, newFirstRegistration)
+
+  private val newCarAdvertJson =
+    s"""{"id":"$newId","title":"$title","fuel":"${fuel.entryName}","price":$price,"new":$isNew}"""
+
+  private val usedCarAdvert =
+    CarAdvert(usedId, title, fuel, price, !isNew, usedMileage, usedFirstRegistration)
+
+  private val usedCarAdvertJson =
+    s"""{"id":"$usedId","title":"$title","fuel":"${fuel.entryName}","price":$price,"new":${!isNew},"mileage":$usedMileageValue,"first registration":"$usedFirstRegistrationValue"}"""
+
   "CarAdvertControllerSpec get()" should {
 
     "respond with correct new car advert" in {
-      val result = CarAdvert(newId, title, fuel, price, isNew, newMileage, newFirstRegistration)
-      val expected = s"""{"id":"$newId","title":"$title","fuel":"${fuel.entryName}","price":$price,"new":$isNew}"""
-
       val dao = mock[DynamoDbCarAdvertDao]
-      when(dao.get(newId)).thenReturn(Future.successful(Right(result)))
+      when(dao.get(newId)).thenReturn(Future.successful(Right(newCarAdvert)))
 
       val controller = new CarAdvertController(dao)
       val response = controller.get(newId)(FakeRequest())
 
       status(response) mustBe OK
       contentType(response) mustBe Some(JsonType)
-      contentAsString(response) mustBe expected
+      contentAsString(response) mustBe newCarAdvertJson
     }
 
     "respond with correct used car advert" in {
-      val result = CarAdvert(usedId, title, fuel, price, !isNew, usedMileage, usedFirstRegistration)
-      val expected = s"""{"id":"$usedId","title":"$title","fuel":"${fuel.entryName}","price":$price,"new":${!isNew},"mileage":$usedMileageValue,"first registration":"$usedFirstRegistrationValue"}"""
-
       val dao = mock[DynamoDbCarAdvertDao]
-      when(dao.get(usedId)).thenReturn(Future.successful(Right(result)))
+      when(dao.get(usedId)).thenReturn(Future.successful(Right(usedCarAdvert)))
 
       val controller = new CarAdvertController(dao)
       val response = controller.get(usedId)(FakeRequest())
 
       status(response) mustBe OK
       contentType(response) mustBe Some(JsonType)
-      contentAsString(response) mustBe expected
+      contentAsString(response) mustBe usedCarAdvertJson
     }
 
     "respond with NOT_FOUND" in {
@@ -83,4 +89,32 @@ class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
     }
 
   }
+
+  "CarAdvertControllerSpec add()" should {
+
+    "return advert for new car after it were added" in {
+      val dao = mock[DynamoDbCarAdvertDao]
+      when(dao.add(newCarAdvert)).thenReturn(Future.successful(Right(newCarAdvert)))
+
+      val controller = new CarAdvertController(dao)
+      val response = controller.add()(FakeRequest().withTextBody(newCarAdvertJson))
+
+      contentAsString(response) mustBe newCarAdvertJson
+      status(response) mustBe OK
+      contentType(response) mustBe Some(JsonType)
+    }
+
+    "return advert for used car after it were added" in {
+      pending
+    }
+
+    "return UnsupportedMediaType if request body content has unexpected type" in {
+      pending
+    }
+
+    "return NotAcceptable if json structure were unexpected" in {
+      pending
+    }
+  }
+
 }

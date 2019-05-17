@@ -1,1 +1,2 @@
 GET     /advert/:id   com.github.xelamanster.controllers.CarAdvertController.get(id: java.util.UUID)
+POST    /advert/      com.github.xelamanster.controllers.CarAdvertController.add()
