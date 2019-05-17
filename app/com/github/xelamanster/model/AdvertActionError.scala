@@ -2,6 +2,17 @@ package com.github.xelamanster.model
 
 import java.util.UUID
 
+import io.circe.Encoder
+
+object AdvertActionError {
+
+  object implicits {
+
+    implicit val dbErrorEncoder: Encoder[AdvertDBActionError] =
+      Encoder.encodeString.contramap(_.toString)
+  }
+}
+
 sealed trait AdvertActionError
 
 sealed trait AdvertDBActionError extends AdvertActionError

@@ -34,4 +34,7 @@ object CarAdvertTestData {
   final val usedCarAdvertJson =
     s"""{"id":"$usedId","title":"$title","fuel":"${fuel.entryName}","price":$price,"new":${!isNew},"mileage":$usedMileageValue,"first registration":"$usedFirstRegistrationValue"}"""
 
+  def scanJson(advertsJson: String*): String = {
+    s"""{"adverts":[${advertsJson.mkString(",")}],"errors":[]}"""
+  }
 }

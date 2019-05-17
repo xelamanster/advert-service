@@ -3,7 +3,6 @@ package com.github.xelamanster
 import com.github.xelamanster.setup.CarAdvertLocalDbSetup
 import com.github.xelamanster.data.CarAdvertTestData._
 import com.github.xelamanster.model.AdvertNotFound
-import com.github.xelamanster.model.dynamodb.CarAdvertTable
 import com.github.xelamanster.utils.HttpContentType
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
 import org.scalatest.BeforeAndAfterEach
@@ -14,7 +13,6 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.test._
-import org.scanamo.ScanamoAsync
 
 import scala.concurrent.ExecutionContext
 
@@ -36,13 +34,26 @@ class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPer
 
     "get advert by id" in {
       val response = for {
-        _ <- ScanamoAsync.exec(CarAdvertLocalDbSetup.localClient)(CarAdvertTable.table.put(newCarAdvert))
+        _ <- CarAdvertLocalDbSetup.put(newCarAdvert)
         Some(get) = route(FakeRequest(GET, s"/advert/${newId.toString}"))
         getResult <- get
       } yield getResult
 
       status(response) mustBe OK
       contentAsString(response) mustBe newCarAdvertJson
+      contentType(response) mustBe Some(HttpContentType.Json)
+    }
+
+    "get all adverts" in {
+      val response = for {
+        _ <- CarAdvertLocalDbSetup.put(usedCarAdvert)
+        _ <- CarAdvertLocalDbSetup.put(newCarAdvert)
+        Some(getAll) = route(FakeRequest(GET, "/advert/"))
+        scanResult <- getAll
+      } yield scanResult
+
+      status(response) mustBe OK
+      contentAsString(response) mustBe scanJson(usedCarAdvertJson, newCarAdvertJson)
       contentType(response) mustBe Some(HttpContentType.Json)
     }
 
@@ -56,7 +67,7 @@ class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPer
 
     "delete advert by id" in {
       val response = for {
-        _ <- ScanamoAsync.exec(CarAdvertLocalDbSetup.localClient)(CarAdvertTable.table.put(newCarAdvert))
+        _ <- CarAdvertLocalDbSetup.put(newCarAdvert)
         Some(delete) = route(FakeRequest(DELETE, s"/advert/${newId.toString}"))
         _ <- delete
         Some(get) = route(FakeRequest(GET, s"/advert/${newId.toString}"))

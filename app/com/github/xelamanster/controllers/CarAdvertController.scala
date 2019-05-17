@@ -23,6 +23,13 @@ class CarAdvertController @Inject()(dao: CarAdvertDAO)
     }
   }
 
+  def getAll(): Action[AnyContent] = Action.async {
+    dao.getAll().map { scanResult =>
+      if(scanResult.containsOnlyErrors) InternalServerError(toMultilineText(scanResult.errors))
+      else Ok(CarAdvertConverter.encode(scanResult)).as(HttpContentType.Json)
+    }
+  }
+
   def add(): Action[AnyContent] = Action.async { request =>
     request.body.asText match {
       case Some(text) => CarAdvertConverter.decode(text) match {
@@ -34,7 +41,7 @@ class CarAdvertController @Inject()(dao: CarAdvertDAO)
   }
 
   private def add(advert: CarAdvert) = dao.add(advert).map {
-    case Right (resultAdvert) => SuccessfulAdvertAction (resultAdvert)
+    case Right (resultAdvert) => SuccessfulAdvertAction(resultAdvert)
     case Left (error) => InternalServerError(error.toString)
   }
 
@@ -44,5 +51,8 @@ class CarAdvertController @Inject()(dao: CarAdvertDAO)
 
   private def SuccessfulAdvertAction(advert: CarAdvert) =
     Ok(CarAdvertConverter.encode(advert)).as(HttpContentType.Json)
+
+  private def toMultilineText(errors: List[AdvertActionError]) =
+    errors.mkString(System.lineSeparator())
 
 }

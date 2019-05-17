@@ -1,7 +1,7 @@
 package com.github.xelamanster.dao.dynamodb
 
 import com.github.xelamanster.dao.CarAdvertDAO
-import com.github.xelamanster.model.{AdvertActionError, AdvertDBActionError, AdvertNotFound, CarAdvert, DBAccessError}
+import com.github.xelamanster.model.{AdvertActionError, AdvertDBActionError, AdvertNotFound, CarAdvert, CarAdvertsScanResult, DBAccessError}
 import com.github.xelamanster.model.dynamodb.CarAdvertTable._
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
 import java.util.UUID
@@ -27,6 +27,24 @@ class DynamoDbCarAdvertDao @Inject()(client: AmazonDynamoDBAsync)
       }
     )
 
+  override def getAll(): Future[CarAdvertsScanResult] =
+    execute(
+      table.scan.map { scan =>
+
+        val (allErrors, allValues) =
+          scan.foldLeft(List.empty[AdvertDBActionError], List.empty[CarAdvert]) {
+
+            case((errors, values), Right(value)) =>
+              (errors, value +: values)
+
+            case((errors, values), Left(error)) =>
+              (toAdvertDBActionError(error) +: errors, values)
+        }
+
+        CarAdvertsScanResult(allValues, allErrors)
+      }
+    )
+
   override def delete(id: UUID): Future[Unit] =
     execute(
       table.delete(fields.Id.attribute -> id.toString).map(_ => ())
@@ -43,5 +61,6 @@ class DynamoDbCarAdvertDao @Inject()(client: AmazonDynamoDBAsync)
   private def execute[A](op: ScanamoOps[A]) =
     ScanamoAsync.exec(client)(op)
 
-  private def toAdvertDBActionError(v: DynamoReadError): AdvertDBActionError = DBAccessError(v.toString)
+  private def toAdvertDBActionError(v: DynamoReadError) =
+    DBAccessError(v.toString)
 }
