@@ -22,4 +22,4 @@ object CarAdvertTable {
   val table: Table[CarAdvert] = Table[CarAdvert](TableName)
 }
 
-case class TableField(name: String, attribute: Symbol, attributeType: ScalarAttributeType))
+case class TableField(name: String, attribute: Symbol, attributeType: ScalarAttributeType)

@@ -10,7 +10,8 @@ object Dependencies {
   lazy val circeCore = "io.circe" %% "circe-core" % circeVersion
   lazy val circeParser = "io.circe" %% "circe-parser" % circeVersion
 
-  lazy val scalatestplus = "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.2"
+  lazy val scalatestplus = "org.scalatestplus" %% "play" % "1.4.0"
+  lazy val mockito = "org.mockito" % "mockito-core" % "2.25.1"
   
   lazy val mainDependencies = Seq(
     java8Compat,
@@ -21,6 +22,7 @@ object Dependencies {
   )
   
   lazy val testDependencies = Seq(
-    scalatestplus
+    scalatestplus,
+    mockito
   )
 }
