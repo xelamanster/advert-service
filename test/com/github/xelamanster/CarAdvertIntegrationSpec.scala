@@ -4,8 +4,7 @@ import com.github.xelamanster.setup.CarAdvertLocalDbSetup
 import com.github.xelamanster.data.CarAdvertTestData._
 import com.github.xelamanster.model.AdvertNotFound
 import com.github.xelamanster.model.dynamodb.CarAdvertTable
-import com.github.xelamanster.utils.JsonUtils
-
+import com.github.xelamanster.utils.HttpContentType
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
@@ -16,6 +15,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.test._
 import org.scanamo.ScanamoAsync
+
 import scala.concurrent.ExecutionContext
 
 class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with BeforeAndAfterEach {
@@ -37,13 +37,13 @@ class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPer
     "get advert by id" in {
       val response = for {
         _ <- ScanamoAsync.exec(CarAdvertLocalDbSetup.localClient)(CarAdvertTable.table.put(newCarAdvert))
-        val Some(get) = route(FakeRequest(GET, s"/advert/${newId.toString}"))
+        Some(get) = route(FakeRequest(GET, s"/advert/${newId.toString}"))
         getResult <- get
       } yield getResult
 
       status(response) mustBe OK
       contentAsString(response) mustBe newCarAdvertJson
-      contentType(response) mustBe Some(JsonUtils.JsonType)
+      contentType(response) mustBe Some(HttpContentType.Json)
     }
 
     "add advert by id" in {
@@ -51,21 +51,21 @@ class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPer
 
       status(add) mustBe OK
       contentAsString(add) mustBe newCarAdvertJson
-      contentType(add) mustBe Some(JsonUtils.JsonType)
+      contentType(add) mustBe Some(HttpContentType.Json)
     }
 
     "delete advert by id" in {
       val response = for {
         _ <- ScanamoAsync.exec(CarAdvertLocalDbSetup.localClient)(CarAdvertTable.table.put(newCarAdvert))
-        val Some(delete) = route(FakeRequest(DELETE, s"/advert/${newId.toString}"))
+        Some(delete) = route(FakeRequest(DELETE, s"/advert/${newId.toString}"))
         _ <- delete
-        val Some(get) = route(FakeRequest(GET, s"/advert/${newId.toString}"))
+        Some(get) = route(FakeRequest(GET, s"/advert/${newId.toString}"))
         getResult <- get
       } yield getResult
 
       status(response) mustBe NOT_FOUND
       contentAsString(response) mustBe AdvertNotFound(newId).toString
-      contentType(response) mustBe Some(JsonUtils.TextType)
+      contentType(response) mustBe Some(HttpContentType.Text)
     }
 
   }

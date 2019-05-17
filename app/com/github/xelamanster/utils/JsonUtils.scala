@@ -18,7 +18,4 @@ object JsonUtils {
   val defaultDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
 
   val dropNullValues: Printer = Printer.noSpaces.copy(dropNullValues = true)
-
-  val JsonType = "application/json"
-  val TextType = "text/plain"
 }

@@ -2,14 +2,14 @@ package com.github.xelamanster.controllers
 
 import com.github.xelamanster.dao.dynamodb.DynamoDbCarAdvertDao
 import com.github.xelamanster.model.AdvertNotFound
-import com.github.xelamanster.utils.JsonUtils._
 import com.github.xelamanster.data.CarAdvertTestData._
-
+import com.github.xelamanster.utils.HttpContentType
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play._
 import play.api.test.Helpers._
 import play.api.test._
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
@@ -26,7 +26,7 @@ class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
       val response = controller.get(newId)(FakeRequest())
 
       status(response) mustBe OK
-      contentType(response) mustBe Some(JsonType)
+      contentType(response) mustBe Some(HttpContentType.Json)
       contentAsString(response) mustBe newCarAdvertJson
     }
 
@@ -38,7 +38,7 @@ class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
       val response = controller.get(usedId)(FakeRequest())
 
       status(response) mustBe OK
-      contentType(response) mustBe Some(JsonType)
+      contentType(response) mustBe Some(HttpContentType.Json)
       contentAsString(response) mustBe usedCarAdvertJson
     }
 
@@ -52,7 +52,7 @@ class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
       val response = controller.get(newId)(FakeRequest())
 
       status(response) mustBe NOT_FOUND
-      contentType(response) mustBe Some(TextType)
+      contentType(response) mustBe Some(HttpContentType.Text)
       contentAsString(response) mustBe expected
     }
 
@@ -73,7 +73,7 @@ class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
 
       contentAsString(response) mustBe newCarAdvertJson
       status(response) mustBe OK
-      contentType(response) mustBe Some(JsonType)
+      contentType(response) mustBe Some(HttpContentType.Json)
     }
 
     "return advert for used car after it were added" in {
