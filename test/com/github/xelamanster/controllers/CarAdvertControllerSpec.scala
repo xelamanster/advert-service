@@ -1,48 +1,20 @@
 package com.github.xelamanster.controllers
 
 import com.github.xelamanster.dao.dynamodb.DynamoDbCarAdvertDao
-import com.github.xelamanster.model.{AdvertNotFound, CarAdvert, Fuel}
+import com.github.xelamanster.model.AdvertNotFound
+import com.github.xelamanster.utils.JsonUtils._
+import com.github.xelamanster.data.CarAdvertTestData._
+
+import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play._
 import play.api.test.Helpers._
 import play.api.test._
-import org.scalatest.mock.MockitoSugar
-import java.time.LocalDateTime
-import java.util.UUID
-import scala.concurrent.Future
-import org.mockito.Mockito._
-
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-
-import com.github.xelamanster.utils.JsonUtils._
+import scala.concurrent.{ExecutionContext, Future}
 
 class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoSugar {
 
-  private val newId = UUID.fromString("11b1f9cd-f6f4-4548-88f9-0cc5ee50227f")
-  private val usedId = UUID.fromString("11b1f9cd-f6f4-4548-88f9-0cc5ee50327f")
-  private val title = "title"
-  private val fuel = Fuel.Diesel
-  private val price = 2
-  private val isNew = true
-
-  private val newMileage = None
-  private val usedMileageValue = 3
-  private val usedMileage = Some(usedMileageValue)
-
-  private val newFirstRegistration = None
-  private val usedFirstRegistrationValue = "18/05/2019 12:43:50"
-  private val usedFirstRegistration = Some(LocalDateTime.from(defaultDateFormat.parse(usedFirstRegistrationValue)))
-
-  private val newCarAdvert =
-    CarAdvert(newId, title, fuel, price, isNew, newMileage, newFirstRegistration)
-
-  private val newCarAdvertJson =
-    s"""{"id":"$newId","title":"$title","fuel":"${fuel.entryName}","price":$price,"new":$isNew}"""
-
-  private val usedCarAdvert =
-    CarAdvert(usedId, title, fuel, price, !isNew, usedMileage, usedFirstRegistration)
-
-  private val usedCarAdvertJson =
-    s"""{"id":"$usedId","title":"$title","fuel":"${fuel.entryName}","price":$price,"new":${!isNew},"mileage":$usedMileageValue,"first registration":"$usedFirstRegistrationValue"}"""
+  lazy implicit val executionContext: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   "CarAdvertControllerSpec get()" should {
 
@@ -122,7 +94,7 @@ class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
     "return OK in case of successful removal" in {
       pending
     }
-    
+
   }
 
 }

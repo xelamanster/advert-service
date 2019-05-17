@@ -29,7 +29,7 @@ class DynamoDbCarAdvertDao @Inject()(client: AmazonDynamoDBAsync)
 
   override def delete(id: UUID): Future[Unit] =
     execute(
-      table.delete(fields.Id.attribute -> id.toString).map(_ => Unit)
+      table.delete(fields.Id.attribute -> id.toString).map(_ => ())
     )
 
   override def add(advert: CarAdvert): Future[Either[AdvertActionError, CarAdvert]] =

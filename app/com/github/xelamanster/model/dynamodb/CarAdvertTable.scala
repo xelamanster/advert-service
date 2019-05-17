@@ -11,7 +11,9 @@ import CarAdvertTable.implicits._
 object CarAdvertTable {
 
   object implicits {
-    implicit val timeFormat: DynamoFormat[LocalDateTime] = ???
+    implicit val timeFormat: DynamoFormat[LocalDateTime] =
+      DynamoFormat.coercedXmap[LocalDateTime, String, IllegalArgumentException](LocalDateTime.parse)(_.toString)
+
     implicit val advertFormat: DynamoFormat[CarAdvert] = deriveDynamoFormat[CarAdvert]
   }
 
@@ -19,9 +21,11 @@ object CarAdvertTable {
     final val Id = TableField("UUID", 'id, S)
   }
 
-  private final val TableName = "CarAdvert"
+  final val TableName = "CarAdvert"
 
   val table: Table[CarAdvert] = Table[CarAdvert](TableName)
 }
 
-case class TableField(name: String, attribute: Symbol, attributeType: ScalarAttributeType)
+case class TableField(name: String, attribute: Symbol, attributeType: ScalarAttributeType) {
+  def definition: (Symbol, ScalarAttributeType) = attribute -> attributeType
+}
