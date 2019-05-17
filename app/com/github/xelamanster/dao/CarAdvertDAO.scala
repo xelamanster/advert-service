@@ -8,6 +8,7 @@ import scala.concurrent.Future
 
 @ImplementedBy(classOf[DynamoDbCarAdvertDao])
 trait CarAdvertDAO {
-  def get(id: UUID): Future[Either[AdvertActionError, CarAdvert]]
   def add(advert: CarAdvert): Future[Either[AdvertActionError, CarAdvert]]
+  def get(id: UUID): Future[Either[AdvertActionError, CarAdvert]]
+  def delete(id: UUID): Future[Unit]
 }

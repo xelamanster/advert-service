@@ -38,6 +38,10 @@ class CarAdvertController @Inject()(dao: CarAdvertDAO)
     case Left (error) => InternalServerError(error.toString)
   }
 
+  def delete(id: UUID): Action[AnyContent] = Action.async {
+    dao.delete(id).map(_ => Ok)
+  }
+
   private def SuccessfulAdvertAction(advert: CarAdvert) =
     Ok(CarAdvertConverter.encode(advert)).as(JsonType)
 

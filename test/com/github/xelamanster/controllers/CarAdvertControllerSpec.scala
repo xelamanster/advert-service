@@ -117,4 +117,12 @@ class CarAdvertControllerSpec extends PlaySpec with OneAppPerSuite with MockitoS
     }
   }
 
+  "CarAdvertControllerSpec delete()" should {
+
+    "return OK in case of successful removal" in {
+      pending
+    }
+    
+  }
+
 }
