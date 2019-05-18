@@ -1,6 +1,6 @@
 package com.github.xelamanster.model.dynamodb
 
-import com.github.xelamanster.model.CarAdvert
+import com.github.xelamanster.model.{CarAdvert, Fuel}
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType._
 import org.scanamo.{DynamoFormat, Table}
@@ -13,6 +13,9 @@ object CarAdvertTable {
   object implicits {
     implicit val timeFormat: DynamoFormat[LocalDateTime] =
       DynamoFormat.coercedXmap[LocalDateTime, String, IllegalArgumentException](LocalDateTime.parse)(_.toString)
+
+    implicit val fuelFormat: DynamoFormat[Fuel] =
+      DynamoFormat.coercedXmap[Fuel, String, IllegalArgumentException](Fuel.withName)(_.entryName)
 
     implicit val advertFormat: DynamoFormat[CarAdvert] = deriveDynamoFormat[CarAdvert]
   }

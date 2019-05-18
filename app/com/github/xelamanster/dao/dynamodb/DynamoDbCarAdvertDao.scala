@@ -73,7 +73,7 @@ class DynamoDbCarAdvertDao @Inject()(client: AmazonDynamoDBAsync)
       updateField(fields.Mileage, _.mileage),
       updateField(fields.FirstRegistration, _.firstRegistration)
     ).flatMap(_ (update))
-      .reduce(Semigroup[UpdateExpression].combine)
+      .reduce(Semigroup.combine(_, _))
 
   private def updateField[T: DynamoFormat](field: TableField, update: CarAdvertUpdate => Option[T]) =
     update.andThen(
