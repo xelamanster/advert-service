@@ -10,6 +10,7 @@ lazy val root = (project in file("."))
     organization := "com.github.xelamanster",
     scalacOptions += "-target:jvm-1.8",
     routesGenerator := InjectedRoutesGenerator,
+    libraryDependencies += filters,
     libraryDependencies ++= mainDependencies,
     libraryDependencies ++= testDependencies.map(_ % Test)
   )
