@@ -42,14 +42,14 @@ response metadata from DeleteItemResult.
 * accept and return data in JSON format, use standard JSON date format for the
 **first registration** field.
 
-For date were used "dd/MM/yyyy HH:mm:ss" format.
+For date were used **dd/MM/yyyy HH:mm:ss** format.
 
 Added and enabled CORS filter.
 
 # Testing
 
-Added unit test specs for CarAdvertController and util classes.
-Added integration test for running on dynamodb, and also covers CarAdvertDao, which doesn't have
+Added unit test specs for **CarAdvertController** and util classes.
+Added integration test for running on dynamodb, and also covers **CarAdvertDao**, which doesn't have
 unit tests (potentially for dao could be added more thin integration layer).
 
 Many of the tests set to pending, and coverage of the added test cases far from full,
@@ -58,17 +58,23 @@ covering mostly happy paths.
 # Notes:
 
 Use:
-Play Framework 2.4.11.
+**Play Framework 2.4.11**.
 
-DynamoDb local - should be running for correct working of the integration spec.
-DynamoDb endpoint could be set using env variable "DYNAMO_ENDPOINT", default value "http://localhost:8000"
+**DynamoDb local** - should be running for correct working of the integration spec.
+DynamoDb endpoint could be set using env variable **DYNAMO_ENDPOINT**, default value **http://localhost:8000**
 Default dynamoDb client specified in the DynamoDBModule relies on system AWS configuration, and
 should be overridden to use local dynamodb without configuration.
 
-For development were used docker image "docker run -p 8000:8000 amazon/dynamodb-local".
+For development were used docker image **docker run -p 8000:8000 amazon/dynamodb-local**.
 
-Scanamo - for connection to db.
+**Scanamo** - for connection to db.
 
-Enumeratum - for enums, because of easy declaration and integration with other libraries.
+**Enumeratum** - for enums, because of easy declaration and integration with other libraries.
 
+**CarAdvertController** returns:
+**CardAdvert** json for GET by Id, PATCH, ADD
+**CarAdvertsScanResult** for GET all
+**Empty Body** for DELETE
 
+Errors descriptions are very basic and contains **toString** version of the underlying error
+object from **AdvertActionError** hierarchy.
