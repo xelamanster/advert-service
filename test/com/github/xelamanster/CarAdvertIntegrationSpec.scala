@@ -16,25 +16,30 @@ import play.api.test._
 
 import scala.concurrent.ExecutionContext
 
-class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with BeforeAndAfterEach {
+class CarAdvertIntegrationSpec
+  extends PlaySpec
+  with MockitoSugar
+  with OneAppPerSuite
+  with BeforeAndAfterEach
+  with CarAdvertLocalDbSetup {
 
   override lazy val app: Application = new GuiceApplicationBuilder()
-    .overrides(bind[AmazonDynamoDBAsync].toInstance(CarAdvertLocalDbSetup.localClient))
+    .overrides(bind[AmazonDynamoDBAsync].toInstance(localClient))
     .build()
 
   lazy implicit val executionContext: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
   override def beforeEach(): Unit =
-    CarAdvertLocalDbSetup.createTable()
+    createTable()
 
   override def afterEach(): Unit =
-    CarAdvertLocalDbSetup.deleteTable()
+    deleteTable()
 
   "Car advert service" should {
 
     "get advert by id" in {
       val response = for {
-        _ <- CarAdvertLocalDbSetup.put(newCarAdvert)
+        _ <- put(newCarAdvert)
         Some(get) = route(FakeRequest(GET, s"/advert/${newId.toString}"))
         getResult <- get
       } yield getResult
@@ -46,8 +51,8 @@ class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPer
 
     "get all adverts" in {
       val response = for {
-        _ <- CarAdvertLocalDbSetup.put(usedCarAdvert)
-        _ <- CarAdvertLocalDbSetup.put(newCarAdvert)
+        _ <- put(usedCarAdvert)
+        _ <- put(newCarAdvert)
         Some(getAll) = route(FakeRequest(GET, "/advert/"))
         scanResult <- getAll
       } yield scanResult
@@ -59,8 +64,8 @@ class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPer
 
     "get all adverts sorted by Id" in {
       val response = for {
-        _ <- CarAdvertLocalDbSetup.put(usedCarAdvert)
-        _ <- CarAdvertLocalDbSetup.put(newCarAdvert)
+        _ <- put(usedCarAdvert)
+        _ <- put(newCarAdvert)
         Some(getAll) = route(FakeRequest(GET, "/advert/?sortBy=id"))
         scanResult <- getAll
       } yield scanResult
@@ -82,7 +87,7 @@ class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPer
       val patchRequest = FakeRequest(PATCH, s"/advert/${newId.toString}").withTextBody(patchJson)
 
       val response = for {
-        _ <- CarAdvertLocalDbSetup.put(newCarAdvert)
+        _ <- put(newCarAdvert)
         Some(patch) = route(patchRequest)
         patchResult <- patch
       } yield patchResult
@@ -94,7 +99,7 @@ class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPer
 
     "delete advert by id" in {
       val response = for {
-        _ <- CarAdvertLocalDbSetup.put(newCarAdvert)
+        _ <- put(newCarAdvert)
         Some(delete) = route(FakeRequest(DELETE, s"/advert/${newId.toString}"))
         _ <- delete
         Some(get) = route(FakeRequest(GET, s"/advert/${newId.toString}"))

@@ -12,7 +12,7 @@ import org.scanamo.error.DynamoReadError
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-object CarAdvertLocalDbSetup {
+trait CarAdvertLocalDbSetup {
   private val dummyCredentials = new BasicAWSCredentials("dummy", "credentials")
   private val localEndpoint = new EndpointConfiguration("http://localhost:8000", "")
   private val arbitraryThroughput = new ProvisionedThroughput(1L, 1L)

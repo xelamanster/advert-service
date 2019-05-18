@@ -7,6 +7,7 @@ import io.circe.{Decoder, Encoder, Printer}
 import io.circe.java8.time.{decodeLocalDateTimeWithFormatter, encodeLocalDateTimeWithFormatter}
 
 object JsonUtils {
+
   object implicits {
     implicit val dateDecoder: Decoder[LocalDateTime] =
       decodeLocalDateTimeWithFormatter(defaultDateFormat)

@@ -8,6 +8,7 @@ import java.util.UUID
 import io.circe.{Decoder, Encoder}
 
 object CarAdvert {
+
   object fields {
     final val Id = "id"
     final val Title = "title"
@@ -20,11 +21,30 @@ object CarAdvert {
 
   object implicits {
     implicit val carAdvertDecoder: Decoder[CarAdvert] =
-      Decoder.forProduct7(fields.Id, fields.Title, fields.Fuel, fields.Price, fields.New, fields.Mileage, fields.FirstRegistration)(CarAdvert.apply)
+      Decoder.forProduct7(
+        fields.Id,
+        fields.Title,
+        fields.Fuel,
+        fields.Price,
+        fields.New,
+        fields.Mileage,
+        fields.FirstRegistration
+      )(
+        CarAdvert.apply
+      )
 
     implicit val carAdvertEncoder: Encoder[CarAdvert] =
-      Encoder.forProduct7(fields.Id, fields.Title, fields.Fuel, fields.Price, fields.New, fields.Mileage, fields.FirstRegistration)(a =>
-        (a.id, a.title, a.fuel, a.price, a.isNew, a.mileage, a.firstRegistration))
+      Encoder.forProduct7(
+        fields.Id,
+        fields.Title,
+        fields.Fuel,
+        fields.Price,
+        fields.New,
+        fields.Mileage,
+        fields.FirstRegistration
+      )(
+        a =>(a.id, a.title, a.fuel, a.price, a.isNew, a.mileage, a.firstRegistration)
+      )
   }
 }
 
