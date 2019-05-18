@@ -19,11 +19,23 @@ object CarAdvertTable {
 
   object fields {
     final val Id = TableField("UUID", 'id, S)
+    final val Title = TableField("title", S)
+    final val Fuel = TableField("fuel", S)
+    final val Price = TableField("price", N)
+    final val New = TableField("isNew", S)
+    final val Mileage = TableField("mileage", N)
+    final val FirstRegistration = TableField("firstRegistration", S)
   }
 
   final val TableName = "CarAdvert"
 
   val table: Table[CarAdvert] = Table[CarAdvert](TableName)
+}
+
+object TableField {
+
+  def apply(name: String, attributeType: ScalarAttributeType): TableField =
+    new TableField(name, Symbol(name), attributeType)
 }
 
 case class TableField(name: String, attribute: Symbol, attributeType: ScalarAttributeType) {

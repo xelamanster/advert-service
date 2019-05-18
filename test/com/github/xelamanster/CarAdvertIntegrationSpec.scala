@@ -65,6 +65,20 @@ class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPer
       contentType(add) mustBe Some(HttpContentType.Json)
     }
 
+    "modify advert by id" in {
+      val patchRequest = FakeRequest(PATCH, s"/advert/${newId.toString}").withTextBody(patchJson)
+
+      val response = for {
+        _ <- CarAdvertLocalDbSetup.put(newCarAdvert)
+        Some(patch) = route(patchRequest)
+        patchResult <- patch
+      } yield patchResult
+
+      status(response) mustBe OK
+      contentAsString(response) mustBe patchResultJson
+      contentType(response) mustBe Some(HttpContentType.Json)
+    }
+
     "delete advert by id" in {
       val response = for {
         _ <- CarAdvertLocalDbSetup.put(newCarAdvert)
