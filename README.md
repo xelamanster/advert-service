@@ -23,13 +23,15 @@ Was thinking about adding pagination, but dismissed this idea because of lack of
 * have functionality to return data for single car advert by id;
 * have functionality to add car advert;
 
-Basic validation were added, checks on **mileage** and **first registration**, whether they should
-be in the advert or not, based on the value of the **new**.
+Validation done by returning **AdvertParseError** in case of wrong json structure or type and
+**AdvertValidationError** in case of problems during additional checks on **mileage** and
+**first registration**, whether they should be in the advert or not, based on the value of the **new**.
 
 * have functionality to modify car advert by id;
 
 Checks if advert with **id** exists in the system before update.
-Basic validation were added, also based on **mileage** and **first registration**.
+Validation done by returning **AdvertParseError** similar to validation during addition of the
+new advert and also checks based on **mileage** and **first registration**.
 Current limitation - not possible to set these fields back to None during modification.
 
 * have functionality to delete car advert by id;
