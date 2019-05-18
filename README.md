@@ -67,9 +67,8 @@ should be overridden to use local dynamodb without configuration.
 
 For development were used docker image "docker run -p 8000:8000 amazon/dynamodb-local".
 
-
 Scanamo - for connection to db.
 
-enumeratum - for enums, because of easy declaration and integration with other libraries.
+Enumeratum - for enums, because of easy declaration and integration with other libraries.
 
 
