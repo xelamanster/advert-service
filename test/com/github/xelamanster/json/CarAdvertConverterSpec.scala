@@ -14,6 +14,14 @@ class CarAdvertConverterSpec extends WordSpec with Matchers {
       pending
     }
 
+    "decode CarAdvertUpdate" in {
+      pending
+    }
+
+    "encode CarAdvertsScanResult" in {
+      pending
+    }
+
   }
 
 }
