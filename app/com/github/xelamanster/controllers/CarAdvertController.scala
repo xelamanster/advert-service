@@ -24,8 +24,12 @@ class CarAdvertController @Inject()(dao: CarAdvertDAO)
     }
   }
 
-  def getAll(): Action[AnyContent] = Action.async {
-    dao.getAll().map { scanResult =>
+  def getAll(sortBy: Option[String]): Action[AnyContent] = Action.async {
+    val scanResult = sortBy
+      .map(dao.getAll)
+      .getOrElse(dao.getAll())
+
+    scanResult.map { scanResult =>
       if(scanResult.containsOnlyErrors) InternalServerError(toMultilineText(scanResult.errors))
       else Ok(CarAdvertConverter.encode(scanResult)).as(HttpContentType.Json)
     }

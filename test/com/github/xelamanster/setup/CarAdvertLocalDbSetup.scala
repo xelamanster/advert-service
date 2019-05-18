@@ -1,13 +1,14 @@
 package com.github.xelamanster.setup
 
-import com.github.xelamanster.model.dynamodb.CarAdvertTable
+import com.github.xelamanster.model.dynamodb.{CarAdvertTable, TableField}
 import com.github.xelamanster.model.CarAdvert
 import com.amazonaws.auth.{AWSStaticCredentialsProvider, BasicAWSCredentials}
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
-import com.amazonaws.services.dynamodbv2.model.{AttributeDefinition, CreateTableRequest, CreateTableResult, DeleteTableResult, KeySchemaElement, KeyType, ProvisionedThroughput, ScalarAttributeType}
+import com.amazonaws.services.dynamodbv2.model.{AttributeDefinition, CreateTableRequest, CreateTableResult, DeleteTableResult, GlobalSecondaryIndex, KeySchemaElement, KeyType, Projection, ProjectionType, ProvisionedThroughput, ScalarAttributeType}
 import com.amazonaws.services.dynamodbv2.{AmazonDynamoDBAsync, AmazonDynamoDBAsyncClient}
 import org.scanamo.ScanamoAsync
 import org.scanamo.error.DynamoReadError
+
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,8 +32,9 @@ object CarAdvertLocalDbSetup {
     localClient.createTable(
       new CreateTableRequest()
         .withTableName(CarAdvertTable.TableName)
-        .withAttributeDefinitions(attributeDefinitions(CarAdvertTable.fields.Id.definition) )
+        .withAttributeDefinitions(attributeDefinitions(CarAdvertTable.indexes:_*))
         .withKeySchema(new KeySchemaElement(CarAdvertTable.fields.Id.attribute.name, KeyType.HASH))
+        .withGlobalSecondaryIndexes(CarAdvertTable.indexes.map(gsi):_*)
         .withProvisionedThroughput(arbitraryThroughput)
     )
 
@@ -41,8 +43,15 @@ object CarAdvertLocalDbSetup {
 
     ScanamoAsync.exec(localClient)(CarAdvertTable.table.put(advert))
 
-  private def attributeDefinitions(attributes: (Symbol, ScalarAttributeType)*) =
-    attributes.map {
-      case (symbol, attributeType) => new AttributeDefinition(symbol.name, attributeType)
-    }.asJava
+  private def attributeDefinitions(fields: TableField*) =
+    fields.distinct.map(
+      field => new AttributeDefinition(field.attribute.name, field.attributeType)
+    ).asJava
+
+  private def gsi(field: TableField) =
+    new GlobalSecondaryIndex()
+      .withIndexName(field.name)
+      .withKeySchema(new KeySchemaElement(field.attribute.name, KeyType.HASH))
+      .withProvisionedThroughput(arbitraryThroughput)
+      .withProjection(new Projection().withProjectionType(ProjectionType.ALL))
 }

@@ -12,6 +12,7 @@ trait CarAdvertDAO {
   def add(advert: CarAdvert): Future[Either[AdvertActionError, CarAdvert]]
   def get(id: UUID): Future[Either[AdvertActionError, CarAdvert]]
   def getAll(): Future[CarAdvertsScanResult]
+  def getAll(sortBy: String): Future[CarAdvertsScanResult]
   def modify(id: UUID, update: CarAdvertUpdate): Future[Either[AdvertActionError, CarAdvert]]
   def delete(id: UUID): Future[Unit]
 }

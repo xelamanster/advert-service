@@ -15,6 +15,9 @@ object CarAdvertsScanResult {
     implicit val scanEncoder: Encoder[CarAdvertsScanResult] =
       Encoder.forProduct2(fields.Adverts, fields.Errors)(scan => (scan.adverts, scan.errors))
   }
+
+  def apply(error: AdvertDBActionError): CarAdvertsScanResult =
+    new CarAdvertsScanResult(List.empty, List(error))
 }
 
 case class CarAdvertsScanResult(adverts: List[CarAdvert], errors: List[AdvertDBActionError]) {

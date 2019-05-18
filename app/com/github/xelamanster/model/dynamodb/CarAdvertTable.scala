@@ -25,10 +25,18 @@ object CarAdvertTable {
     final val Title = TableField("title", S)
     final val Fuel = TableField("fuel", S)
     final val Price = TableField("price", N)
-    final val New = TableField("isNew", S)
+    final val New = TableField("isNew", S) //TODO Set correct type.
     final val Mileage = TableField("mileage", N)
     final val FirstRegistration = TableField("firstRegistration", S)
   }
+
+  val indexes: Seq[TableField] = List(
+    fields.Id,
+    fields.Title,
+    fields.Fuel,
+    fields.Price,
+    fields.Mileage,
+    fields.FirstRegistration)
 
   final val TableName = "CarAdvert"
 

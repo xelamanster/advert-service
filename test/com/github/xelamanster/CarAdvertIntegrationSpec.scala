@@ -57,6 +57,19 @@ class CarAdvertIntegrationSpec extends PlaySpec with MockitoSugar with OneAppPer
       contentType(response) mustBe Some(HttpContentType.Json)
     }
 
+    "get all adverts sorted by Id" in {
+      val response = for {
+        _ <- CarAdvertLocalDbSetup.put(usedCarAdvert)
+        _ <- CarAdvertLocalDbSetup.put(newCarAdvert)
+        Some(getAll) = route(FakeRequest(GET, "/advert/?sortBy=id"))
+        scanResult <- getAll
+      } yield scanResult
+
+      status(response) mustBe OK
+      contentAsString(response) mustBe scanJson(usedCarAdvertJson, newCarAdvertJson)
+      contentType(response) mustBe Some(HttpContentType.Json)
+    }
+
     "add advert by id" in {
       val Some(add) = route(FakeRequest(POST, s"/advert/").withTextBody(newCarAdvertJson))
 

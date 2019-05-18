@@ -1,7 +1,7 @@
 package com.github.xelamanster.dao.dynamodb
 
 import com.github.xelamanster.dao.CarAdvertDAO
-import com.github.xelamanster.model.{AdvertActionError, AdvertDBActionError, AdvertNotFound, CarAdvert, CarAdvertUpdate, CarAdvertsScanResult, DBAccessError}
+import com.github.xelamanster.model.{AdvertActionError, AdvertDBActionError, AdvertNotFound, CarAdvert, CarAdvertUpdate, CarAdvertsScanResult, DBAccessError, WrongIndexError}
 import com.github.xelamanster.model.dynamodb.TableField
 import com.github.xelamanster.model.dynamodb.CarAdvertTable._
 import com.github.xelamanster.model.dynamodb.CarAdvertTable.implicits._
@@ -32,21 +32,31 @@ class DynamoDbCarAdvertDao @Inject()(client: AmazonDynamoDBAsync)
 
   override def getAll(): Future[CarAdvertsScanResult] =
     execute(
-      table.scan.map { scan =>
-
-        val (allErrors, allValues) =
-          scan.foldLeft(List.empty[AdvertDBActionError], List.empty[CarAdvert]) {
-
-            case((errors, values), Right(value)) =>
-              (errors, value +: values)
-
-            case((errors, values), Left(error)) =>
-              (toAdvertDBActionError(error) +: errors, values)
-        }
-
-        CarAdvertsScanResult(allValues, allErrors)
-      }
+      table.scan.map(toCarAdvertsScanResult)
     )
+
+  override def getAll(sortBy: String): Future[CarAdvertsScanResult] = {
+    val indexField = indexes.find(_.attribute.name == sortBy)
+
+    indexField.map( index =>
+      execute(table.index(index.name).scan.map(toCarAdvertsScanResult))
+    ).getOrElse(Future.successful(CarAdvertsScanResult(WrongIndexError(sortBy))))
+
+  }
+
+  private def toCarAdvertsScanResult(scan: List[Either[DynamoReadError, CarAdvert]]) = {
+    val (allErrors, allValues) =
+      scan.foldLeft(List.empty[AdvertDBActionError], List.empty[CarAdvert]) {
+
+        case((errors, values), Right(value)) =>
+          (errors, value +: values)
+
+        case((errors, values), Left(error)) =>
+          (toAdvertDBActionError(error) +: errors, values)
+      }
+
+    CarAdvertsScanResult(allValues, allErrors)
+  }
 
   override def add(advert: CarAdvert): Future[Either[AdvertActionError, CarAdvert]] =
     execute(
