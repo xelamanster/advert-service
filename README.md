@@ -72,9 +72,9 @@ For development were used docker image **docker run -p 8000:8000 amazon/dynamodb
 **Enumeratum** - for enums, because of easy declaration and integration with other libraries.
 
 **CarAdvertController** returns:
-**CardAdvert** json for GET by Id, PATCH, ADD
-**CarAdvertsScanResult** for GET all
-**Empty Body** for DELETE
+* **CardAdvert** json for GET by Id, PATCH, ADD
+* **CarAdvertsScanResult** for GET all
+* **Empty Body** for DELETE
 
 Errors descriptions are very basic and contains **toString** version of the underlying error
 object from **AdvertActionError** hierarchy.
