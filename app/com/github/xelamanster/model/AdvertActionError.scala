@@ -2,6 +2,7 @@ package com.github.xelamanster.model
 
 import java.util.UUID
 
+import cats.kernel.Semigroup
 import io.circe.Encoder
 
 object AdvertActionError {
@@ -10,6 +11,12 @@ object AdvertActionError {
 
     implicit val dbErrorEncoder: Encoder[AdvertDBActionError] =
       Encoder.encodeString.contramap(_.toString)
+
+    implicit val validationSemigroup: Semigroup[AdvertValidationError] = new Semigroup[AdvertValidationError] {
+      override def combine(x: AdvertValidationError, y: AdvertValidationError): AdvertValidationError =
+        AdvertValidationError(s"x,${System.lineSeparator()}y")
+    }
+
   }
 }
 

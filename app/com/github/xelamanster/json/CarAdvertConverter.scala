@@ -11,14 +11,17 @@ import cats.implicits._
 
 object CarAdvertConverter {
 
-  def decodeUpdate(text: String): Either[AdvertJsonActionError, CarAdvertUpdate] = parse(text)
-    .flatMap(_.as[CarAdvertUpdate])
-    .leftMap(error => AdvertParseError(error.getMessage))
+  def decodeUpdate(currentAdvert: CarAdvert, updateText: String): Either[AdvertJsonActionError, CarAdvertUpdate] =
+    parse(updateText)
+      .flatMap(_.as[CarAdvertUpdate])
+      .leftMap(error => AdvertParseError(error.getMessage))
+      .flatMap(CarAdvertUpdateValidator.validate(currentAdvert))
 
   def decode(text: String): Either[AdvertJsonActionError, CarAdvert] =
     parse(text)
       .flatMap(_.as[CarAdvert])
       .leftMap(error => AdvertParseError(error.getMessage))
+      .flatMap(CarAdvertValidator.validate)
 
   def encode(advertScan: CarAdvertsScanResult): String =
     advertScan.asJson.pretty(dropNullValues)

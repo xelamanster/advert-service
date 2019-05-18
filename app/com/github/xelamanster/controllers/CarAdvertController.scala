@@ -10,6 +10,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, Controller}
 
 import scala.concurrent.{ExecutionContext, Future}
+import cats.implicits._
 
 @Singleton
 class CarAdvertController @Inject()(dao: CarAdvertDAO)
@@ -47,10 +48,17 @@ class CarAdvertController @Inject()(dao: CarAdvertDAO)
 
   def modify(id: UUID): Action[AnyContent] = Action.async { request =>
     request.body.asText match {
-      case Some(text) => CarAdvertConverter.decodeUpdate(text) match {
-        case Right(update: CarAdvertUpdate) => modify(id, update)
-        case Left(failure: AdvertJsonActionError) => Future.successful(NotAcceptable(failure.toString))
-      }
+      case Some(updateText) =>
+        dao.get(id).flatMap {
+          _.flatMap(currentAdvert => CarAdvertConverter.decodeUpdate(currentAdvert, updateText)) match {
+            case Right(update: CarAdvertUpdate) =>
+              modify(id, update)
+
+            case Left(failure: AdvertActionError) =>
+              Future.successful(NotAcceptable(failure.toString))
+          }
+        }
+
       case None => Future.successful(UnsupportedMediaType)
     }
   }
