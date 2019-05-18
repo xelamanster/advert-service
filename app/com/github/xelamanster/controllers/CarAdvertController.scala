@@ -2,10 +2,10 @@ package com.github.xelamanster.controllers
 
 import com.github.xelamanster.dao.CarAdvertDAO
 import com.github.xelamanster.model.{AdvertActionError, AdvertJsonActionError, AdvertNotFound, CarAdvert, CarAdvertUpdate}
-import java.util.UUID
-
 import com.github.xelamanster.json.CarAdvertConverter
 import com.github.xelamanster.utils.HttpContentType
+
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, Controller}
 
